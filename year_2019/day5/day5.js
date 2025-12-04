@@ -4,10 +4,23 @@ const data = input.split(",").map((x) => parseInt(x));
 
 const sum = (x, y) => x + y;
 const mul = (x, y) => x * y;
+const isLessThan = (x, y) => x < y ? 1 : 0;
+const isequal = (x, y) => x === y ? 1 : 0;
 
 const calculator = {
   1: sum,
   2: mul,
+  7: isLessThan,
+  8: isequal,
+};
+
+const isNonZero = (num, reff, actualIndex) =>
+  num !== 0 ? reff : actualIndex + 3;
+const isZero = (num, reff, actualIndex) => num === 0 ? reff : actualIndex + 3;
+
+const flagIndex = {
+  5: isNonZero,
+  6: isZero,
 };
 
 const parseInstruction = (input) => {
@@ -34,7 +47,7 @@ const computer = (data) => {
   while (i < array.length && array[i] !== 99) {
     const [second, first, opc] = parseInstruction(array[i]);
 
-    if (opc === 1 || opc === 2) {
+    if ([1, 2, 7, 8].includes(opc)) {
       const value = calculator[opc](
         array[index(first, i, 1)],
         array[index(second, i, 2)],
@@ -49,12 +62,17 @@ const computer = (data) => {
     } else if (opc === 4) {
       console.log("data", array[index(first, i, 1)]);
       i += 2;
+    } else if (opc === 5 || opc === 6) {
+      const delta = flagIndex[opc](
+        array[index(first, i, 1)],
+        array[index(second, i, 2)],
+        i,
+      );
+      i = delta;
     }
   }
   return array;
 };
-
-// console.log(computer([1002, 4, 3, 4, 33]));
 
 const result = computer(data);
 console.log(result);
